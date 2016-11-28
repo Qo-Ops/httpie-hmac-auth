@@ -49,17 +49,18 @@ class HmacAuth:
 
         url = urlparse(r.url)
         path = url.path
-
-        string_to_sign = '\n'.join([method, content_md5, content_type, httpdate, path]).encode('utf-8')
-        digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha256).digest()
+        canonical_headers = [k + ':' + v for k, v in r.headers if k.startswith('x-amz-')]
+        signature_args = [method, content_md5, content_type, httpdate].extend(canonical_headers).append(path)
+        string_to_sign = '\n'.join(signature_args).encode('utf-8')
+        digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha1).digest()
         signature = base64.encodestring(digest).rstrip().decode('utf-8')
 
         if self.access_key == '':
-            r.headers['Authorization'] = 'HMAC %s' % signature
+            r.headers['Authorization'] = 'AWS %s' % signature
         elif self.secret_key == '':
             raise ValueError('HMAC secret key cannot be empty.')
         else:
-            r.headers['Authorization'] = 'HMAC %s:%s' % (self.access_key, signature)
+            r.headers['Authorization'] = 'AWS %s:%s' % (self.access_key, signature)
 
         return r
 
