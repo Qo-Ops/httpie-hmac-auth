@@ -49,8 +49,10 @@ class HmacAuth:
 
         url = urlparse(r.url)
         path = url.path
-        canonical_headers = [k + ':' + v for k, v in r.headers if k.startswith('x-amz-')]
-        signature_args = [method, content_md5, content_type, httpdate].extend(canonical_headers).append(path)
+        canonical_headers = [k + ':' + v for k, v in r.headers.items() if k.startswith('x-amz-')]
+        signature_args = [method, content_md5, content_type, httpdate]
+        signature_args += canonical_headers
+        signature_args.append(path)
         string_to_sign = '\n'.join(signature_args).encode('utf-8')
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha1).digest()
         signature = base64.encodestring(digest).rstrip().decode('utf-8')
