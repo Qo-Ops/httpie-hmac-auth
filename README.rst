@@ -4,6 +4,7 @@ Authentication plugin for `HTTPie <https://github.com/jkbrzt/httpie>`_.
 The plugin provides authentication signature (version 2) as specified in `AWS guidelines <https://s3.amazonaws.com/doc/s3-developer-guide/RESTAuthentication.html>`_.
 
 The signature includes:
+
 * Method
 * Content-MD5
 * Content-Type
