@@ -1,5 +1,5 @@
 """
-HMAC Auth plugin for HTTPie.
+AWS Auth plugin for HTTPie.
 
 """
 import datetime
@@ -14,17 +14,19 @@ try:
 except ImportError:
     from urllib.parse import urlparse
 
-__version__ = '0.2.1'
-__author__ = 'Nick Satterly'
+__version__ = '0.0.1'
+__author__ = 'Ilya Gladyshev'
 __licence__ = 'MIT'
 
 
-class HmacAuth:
+class AWSAuth:
     def __init__(self, access_key, secret_key):
         self.access_key = access_key
         self.secret_key = secret_key.encode('ascii')
 
     def __call__(self, r):
+        if not self.access_key or not self.secret_key:
+            ValueError("Both access key and secret key must be provided")
         method = r.method
 
         content_type = r.headers.get('content-type')
@@ -56,22 +58,15 @@ class HmacAuth:
         string_to_sign = '\n'.join(signature_args).encode('utf-8')
         digest = hmac.new(self.secret_key, string_to_sign, hashlib.sha1).digest()
         signature = base64.encodestring(digest).rstrip().decode('utf-8')
-
-        if self.access_key == '':
-            r.headers['Authorization'] = 'AWS %s' % signature
-        elif self.secret_key == '':
-            raise ValueError('HMAC secret key cannot be empty.')
-        else:
-            r.headers['Authorization'] = 'AWS %s:%s' % (self.access_key, signature)
-
+        r.headers['Authorization'] = 'AWS %s:%s' % (self.access_key, signature)
         return r
 
 
-class HmacAuthPlugin(AuthPlugin):
+class AWSAuthPlugin(AuthPlugin):
 
-    name = 'HMAC token auth'
-    auth_type = 'hmac'
-    description = 'Sign requests using a HMAC authentication method like AWS'
+    name = 'AWS S3 authentication version 2'
+    auth_type = 'aws'
+    description = 'Adds signature to the request as amazon AWS requires'
 
     def get_auth(self, access_key, secret_key):
-        return HmacAuth(access_key, secret_key)
+        return AWSAuth(access_key, secret_key)

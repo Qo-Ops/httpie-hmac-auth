@@ -1,31 +1,26 @@
 from setuptools import setup
-try:
-    import multiprocessing
-except ImportError:
-    pass
 
 setup(
-    name='httpie-hmac-auth',
-    description='HMAC Auth plugin for HTTPie.',
+    name='httpie-aws-auth',
+    description='AWS auth plugin for HTTPie',
     long_description=open('README.rst').read().strip(),
-    version='0.2.1',
-    author='Nick Satterly',
-    author_email='nick.satterly@theguardian.com',
+    version='0.0.1',
+    author='Ilya Gladyshev',
+    keywords='aws httpie authentication',
+    author_email='ilya.v.gladyshev@gmail.com',
     license='MIT',
-    url='https://github.com/guardian/httpie-hmac-auth',
-    download_url='https://github.com/guardian/httpie-hmac-auth',
-    py_modules=['httpie_hmac_auth'],
+    py_modules=['httpie_aws_auth'],
     zip_safe=False,
     entry_points={
         'httpie.plugins.auth.v1': [
-            'httpie_hmac_auth = httpie_hmac_auth:HmacAuthPlugin'
+            'httpie_aws_auth = httpie_aws_auth:AWSAuthPlugin'
         ]
     },
     install_requires=[
         'httpie>=0.7.0'
     ],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 1 - Beta',
         'Programming Language :: Python',
         'Intended Audience :: Developers',
         'Environment :: Plugins',
